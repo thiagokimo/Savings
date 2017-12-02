@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Savings</string>
+    <string name="loading">Loading…</string>
+    <string name="retry">Retry</string>
+    <string name="item_list_savings_amount_text_incomplete">$%s</string>
+    <string name="item_list_savings_amount_text_complete">$%s of %s</string>
+</resources>
