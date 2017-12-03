@@ -4,7 +4,6 @@ package io.kimo.savings.domain.use_case;
 import android.support.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import io.kimo.savings.data.SavingsService;
 import io.kimo.savings.domain.BaseUseCase;
@@ -26,8 +25,7 @@ public class LoadSavingsUseCase extends BaseUseCase<List<Saving>> {
     }
 
     private void setupObservables() {
-        mLoadSavingsObservable = Observable.timer(3, TimeUnit.SECONDS) //FOR DEMO
-                .flatMap(ignore -> mSavingsService.getSavings())
+        mLoadSavingsObservable = mSavingsService.getSavings()
                 .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

@@ -22,7 +22,6 @@ public class SavingsListViewModel extends BaseViewModel implements SavingsListCo
     @Override
     public void setErrorReason(@NonNull String errorReason) {
         mErrorReason = errorReason;
-        setState(State.ERROR);
     }
 
     @Override
@@ -33,7 +32,6 @@ public class SavingsListViewModel extends BaseViewModel implements SavingsListCo
     @Override
     public void showSavings(List<Saving> savings) {
         mAdapter.setSavings(savings);
-        setState(State.NORMAL);
     }
 
     @Override

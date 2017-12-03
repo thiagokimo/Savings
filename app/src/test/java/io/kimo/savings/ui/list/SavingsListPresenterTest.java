@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import io.kimo.savings.data.SavingsService;
 import io.kimo.savings.domain.model.Saving;
+import io.kimo.savings.domain.use_case.LoadSavingsUseCase;
 import io.kimo.savings.ui.BaseContract;
 import rx.Observable;
 import rx.Scheduler;
@@ -19,15 +20,8 @@ import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 
 public class SavingsListPresenterTest {
-
-    private SavingsListViewModel mViewModel;
-    private SavingsService mSavingsService;
-
     @Before
     public void setUp() throws Exception {
-        mViewModel = new SavingsListViewModel(Mockito.mock(Context.class), new SavingsListAdapter());
-        mSavingsService = Mockito.mock(SavingsService.class);
-
         RxJavaHooks.setOnIOScheduler(scheduler -> Schedulers.immediate());
         RxAndroidPlugins.getInstance().registerSchedulersHook(new RxAndroidSchedulersHook(){
             @Override
@@ -45,27 +39,31 @@ public class SavingsListPresenterTest {
 
     @Test
     public void shouldDisplayErrorState() throws Exception {
-        Mockito.when(mSavingsService.getSavings()).thenReturn(Observable.error(new NullPointerException()));
+        SavingsService savingsService = Mockito.mock(SavingsService.class);
+        Mockito.when(savingsService.getSavings()).thenReturn(Observable.error(new Throwable()));
 
-        SavingsListPresenter presenter = new SavingsListPresenter(mViewModel, mSavingsService);
+        LoadSavingsUseCase loadSavingsUseCase = new LoadSavingsUseCase(savingsService);
+        SavingsListViewModel viewModel = new SavingsListViewModel(Mockito.mock(Context.class), new SavingsListAdapter());
+        SavingsListPresenter presenter = new SavingsListPresenter(viewModel, loadSavingsUseCase);
+        loadSavingsUseCase.setCallback(presenter);
+
         presenter.createView();
 
-        Assert.assertEquals(BaseContract.ViewModel.State.ERROR, mViewModel.getState());
+        Assert.assertEquals(BaseContract.ViewModel.State.ERROR, viewModel.getState());
     }
 
     @Test
     public void shouldDisplayNormalState() throws Exception {
-        Saving saving = new Saving();
-        saving.setName("name");
-        saving.setImageUrl("http://qwerty.asdfgh.zxcvb");
-        saving.setCurrentAmount("123");
-        saving.setTargetAmount("456");
+        SavingsService savingsService = Mockito.mock(SavingsService.class);
+        Mockito.when(savingsService.getSavings()).thenReturn(Observable.just(new Saving()));
 
-        Mockito.when(mSavingsService.getSavings()).thenReturn(Observable.just(saving));
+        LoadSavingsUseCase loadSavingsUseCase = new LoadSavingsUseCase(savingsService);
+        SavingsListViewModel viewModel = new SavingsListViewModel(Mockito.mock(Context.class), new SavingsListAdapter());
+        SavingsListPresenter presenter = new SavingsListPresenter(viewModel, loadSavingsUseCase);
+        loadSavingsUseCase.setCallback(presenter);
 
-        SavingsListPresenter presenter = new SavingsListPresenter(mViewModel, mSavingsService);
         presenter.createView();
 
-        Assert.assertEquals(BaseContract.ViewModel.State.NORMAL, mViewModel.getState());
+        Assert.assertEquals(BaseContract.ViewModel.State.NORMAL, viewModel.getState());
     }
 }

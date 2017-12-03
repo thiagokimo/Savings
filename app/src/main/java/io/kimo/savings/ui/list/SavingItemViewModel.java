@@ -27,9 +27,9 @@ public class SavingItemViewModel extends BaseViewModel implements SavingsListCon
 
     @Override
     public String getAmountText() {
-        if (!mModel.getTargetAmount().equals("null") ||
+        if (mModel.getTargetAmount() != null && (!mModel.getTargetAmount().equals("null") ||
                 mModel.getTargetAmount().equals("") ||
-                mModel.getTargetAmount() == null) {
+                mModel.getTargetAmount() == null)) {
             return mContext.getString(R.string.item_list_savings_amount_text_complete, mModel.getCurrentAmount(), mModel.getTargetAmount());
         }
         return mContext.getString(R.string.item_list_savings_amount_text_incomplete, mModel.getCurrentAmount());
